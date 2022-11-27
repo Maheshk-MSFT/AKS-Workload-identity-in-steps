@@ -22,22 +22,14 @@ az aks create -g myResourceGroup1 -n myAKSCluster1 --node-count 1 --enable-oidc-
 (4) Export environmental variables
 ========================================
 export AKS_OIDC_ISSUER="$(az aks show -n myAKSCluster1 -g myResourceGroup1 --query "oidcIssuerProfile.issuerUrl" -otsv)"
-
-# environment variables for the Azure Key Vault resource
 export KEYVAULT_NAME="azwi-kv-tutorial1"
 export KEYVAULT_SECRET_NAME="my-secret1"
 export RESOURCE_GROUP="myResourceGroup1"
 export LOCATION="westcentralus"
-
-# environment variables for the Kubernetes Service account & federated identity credential
 export SERVICE_ACCOUNT_NAMESPACE="default"
 export SERVICE_ACCOUNT_NAME="workload-identity-sa"
-
-# environment variables for the Federated Identity
 export SUBSCRIPTION="38e1b8c4-c5bc-4dd5-a7e0-e909b45f4fad"
-# user assigned identity name
 export UAID="fic-test-ua"
-# federated identity name
 export FICID="fic-test-fic-name"
 
 (5) Create an Azure Key Vault and secret
@@ -49,10 +41,7 @@ az keyvault secret set --vault-name "${KEYVAULT_NAME}" --name "${KEYVAULT_SECRET
 ========================================
 az account set --subscription "${SUBSCRIPTION}"
 az identity create --name "${UAID}" --resource-group "${RESOURCE_GROUP}" --location "${LOCATION}" --subscription "${SUBSCRIPTION}"
-
-
 export USER_ASSIGNED_CLIENT_ID="$(az identity show --resource-group "${RESOURCE_GROUP}" --name "${UAID}" --query 'clientId' -otsv)"
-
 az keyvault set-policy --name "${KEYVAULT_NAME}" --secret-permissions get --spn "${USER_ASSIGNED_CLIENT_ID}"
 
 (7) Create Kubernetes service account
