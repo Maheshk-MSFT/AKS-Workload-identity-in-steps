@@ -98,8 +98,9 @@ kubectl logs quick-start
 
 ```output
 I1013 22:49:29.872708       1 main.go:30] "successfully got secret" secret="Hello!"
-<img width="471" alt="1" src="https://user-images.githubusercontent.com/61469290/204133311-658aafcc-bfdc-4b0a-b182-54dc5d007ef0.png">
 ```
+<img width="471" alt="1" src="https://user-images.githubusercontent.com/61469290/204133311-658aafcc-bfdc-4b0a-b182-54dc5d007ef0.png">
+
 (10) Clean up resources
 
 ```azurecli
