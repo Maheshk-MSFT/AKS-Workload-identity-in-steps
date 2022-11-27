@@ -1,8 +1,4 @@
 # AKS-Workload-identity-in-steps
-AKS-Workload-identity-in-steps
-
-
-
 
 (1) Create a resource group
 ```azurecli
