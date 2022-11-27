@@ -5,24 +5,21 @@ AKS-Workload-identity-in-steps
 
 
 (1) Create a resource group
-========================================
+```azurecli
 az group create --name myResourceGroup1 --location eastus
-
+```
 
 (2) Install the aks-preview Azure CLI extension
-========================================
 ```azurecli
 az extension add --name aks-preview
 az extension update --name aks-preview
 ```
 
 (3) Create AKS cluster
-========================================
 ```azurecli
 az aks create -g myResourceGroup1 -n myAKSCluster1 --node-count 1 --enable-oidc-issuer --enable-workload-identity --generate-ssh-keys
 ```
 (4) Export environmental variables
-========================================
 ```bash
 export AKS_OIDC_ISSUER="$(az aks show -n myAKSCluster1 -g myResourceGroup1 --query "oidcIssuerProfile.issuerUrl" -otsv)"
 export KEYVAULT_NAME="azwi-kv-tutorial1"
@@ -36,13 +33,13 @@ export UAID="fic-test-ua"
 export FICID="fic-test-fic-name"
 ```
 (5) Create an Azure Key Vault and secret
-========================================
+
 ```azurecli
 az keyvault create --resource-group "${RESOURCE_GROUP}" --location "${LOCATION}" --name "${KEYVAULT_NAME}"
 az keyvault secret set --vault-name "${KEYVAULT_NAME}" --name "${KEYVAULT_SECRET_NAME}" --value 'Hello22!'
 ```
 (6) Create a managed identity and grant permissions to access the secret
-========================================
+
 ```azurecli
 az account set --subscription "${SUBSCRIPTION}"
 az identity create --name "${UAID}" --resource-group "${RESOURCE_GROUP}" --location "${LOCATION}" --subscription "${SUBSCRIPTION}"
@@ -51,7 +48,7 @@ az keyvault set-policy --name "${KEYVAULT_NAME}" --secret-permissions get --spn 
 ```
 
 (7) Create Kubernetes service account
-========================================
+
 ```bash
 az aks get-credentials -n myAKSCluster1 -g myResourceGroup1
 
@@ -68,13 +65,13 @@ metadata:
 EOF
 ```
 (8) Establish federated identity credential
-========================================
+
 ```azurecli
 az identity federated-credential create --name ${FICID} --identity-name ${UAID} --resource-group ${RESOURCE_GROUP} --issuer ${AKS_OIDC_ISSUER} --subject system:serviceaccount:${SERVICE_ACCOUNT_NAMESPACE}:${SERVICE_ACCOUNT_NAME}
 
 ```
 (9) Deploy the workload
-========================================
+
 ```bash
 
 export KEYVAULT_URL="$(az keyvault show -g ${RESOURCE_GROUP} -n ${KEYVAULT_NAME} --query properties.vaultUri -o tsv)"
@@ -107,7 +104,7 @@ kubectl logs quick-start
 I1013 22:49:29.872708       1 main.go:30] "successfully got secret" secret="Hello!"
 ```
 (10) Clean up resources
-========================================
+
 ```azurecli
 kubectl delete pod quick-start
 kubectl delete sa "${SERVICE_ACCOUNT_NAME}" --namespace "${SERVICE_ACCOUNT_NAMESPACE}"
